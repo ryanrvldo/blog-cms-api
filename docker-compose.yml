@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  blog-cms-api:
+    container_name: blog-cms-api
+    image: blog-cms-api:0.0.1
+    build:
+      context: './'
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8081"
+    depends_on:
+      - blog-cms-postgres
+    environment:
+      DB_USERNAME: "${DB_USER}"
+      DB_PASSWORD: "${DB_PASS}"
+      DB_URL: jdbc:postgresql://blog-cms-postgres:5432/blog-cms
+    networks:
+      - development
+
+  blog-cms-postgres:
+    container_name: "blog-cms-postgres"
+    image: postgres:12-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: "${DB_USER}"
+      POSTGRES_PASSWORD: "${DB_PASS}"
+      POSTGRES_DB: blog-cms
+    networks:
+      - development
+    volumes:
+      - postgres-volume
+
+networks:
+  development:
+    name: development
+
+volumes:
+  postgres-volume:
+    name: postgres-volume
